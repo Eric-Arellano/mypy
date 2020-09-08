@@ -183,6 +183,8 @@ def python_executable_prefix(v: str) -> List[str]:
 
 
 def _python_executable_from_version(python_version: Tuple[int, int]) -> str:
+    print(f"requested python_version: {python_version}")
+    print(f"current: {sys.version_info}")
     if sys.version_info[:2] == python_version:
         return sys.executable
     str_ver = '.'.join(map(str, python_version))
@@ -190,6 +192,7 @@ def _python_executable_from_version(python_version: Tuple[int, int]) -> str:
         sys_exe = subprocess.check_output(python_executable_prefix(str_ver) +
                                           ['-c', 'import sys; print(sys.executable)'],
                                           stderr=subprocess.STDOUT).decode().strip()
+        print(f"sys_exe: {sys_exe}")
         return sys_exe
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         raise PythonExecutableInferenceError(
@@ -212,6 +215,7 @@ def infer_python_executable(options: Options,
     # config file. If an executable is not specified, infer it from the version
     # (unless no_executable is set)
     python_executable = special_opts.python_executable or options.python_executable
+    print(f"python_executable from options: {python_executable}")
 
     if python_executable is None:
         if not special_opts.no_executable and not options.no_site_packages:
